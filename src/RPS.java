@@ -8,6 +8,12 @@ public class RPS {
 	private Bot bot;
 	private Scoreboard scoreboard;
 	private ResourceBundle messages;
+	//enregistrement du temps de début
+	private long gameStartTime; 
+	//Ajout var pour le temps total
+	private double gameDuration;
+
+
 
 	static Scanner sc = new Scanner(System.in);
 
@@ -40,6 +46,9 @@ public class RPS {
 		Controller.display(player.getName(), playerSign, messages);
 		int botSign = bot.selectSign(gameModeRPS);
 		Controller.display("bot", botSign, messages);
+		
+		//enregister le temps de début de la manche
+		long roundStartTime = System.currentTimeMillis();
 
 		int result = Controller.compareSigns(playerSign, botSign);
 		switch (result) {
@@ -58,12 +67,25 @@ public class RPS {
 
 		scoreboard.displayScore();
 
+		//calcul de la duréee de la manche
+		double roundDuration= (System.currentTimeMillis()- roundStartTime) /1000.0;
+		System.out.println("le Temps de la manche est :" +roundDuration +"Secondes");
+
+
 		// Demande a l'utilisateur s'il veut jouer a nouveau
 		int nbRound = player.getNbOfRound();
 		int playerCount = player.getScore();
 		int botCount = bot.getScore();
 		if (playerCount == nbRound || botCount == nbRound){
 			System.out.println(messages.getString("game_over"));
+			if (gameDuration == 0 ){
+				//on calcul le temps réel de jeu si ce n'est pas fait
+
+				gameDuration = (System.currentTimeMillis() - gameStartTime) / 1000.0;
+			}
+
+			System.out.println ("Le Temps total de jeu est : " + gameDuration +"secondes");
+
 			player.resetScore();
 			bot.resetScore();
 			if (player.playAgain()) {
@@ -92,6 +114,9 @@ public class RPS {
 	
 	public void getNumberOfRound(){
 		player.askNumberOfRound();
+		
+		//enrgistrer le temps de début du jeu au début du jeu
+		gameStartTime = System.currentTimeMillis();
 	}
 
 	public char getGameMode(){
